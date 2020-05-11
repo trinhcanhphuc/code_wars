@@ -1,61 +1,38 @@
-import java.util.LinkedList;
-import java.util.Queue;
-import java.io.*;
-
 public class Finder {
+  private final static int INF = Integer.MAX_VALUE;
+  private static int[][] graph;
+
   public static int pathFinder(String maze) {
-    maze = maze.replaceAll("\n","");
-    StringBuilder stringBuilder = new StringBuilder(maze);
-    int n = (int) Math.sqrt(maze.length());
-    stringBuilder.replace(0,1,"W");
-    Queue<Position> positionQueue = new LinkedList<Position>() {
-      {
-        offer(new Position(0,0,0));
-      }
-    };
-
-    int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-
-    while (!positionQueue.isEmpty()) {
-      Position position = positionQueue.poll();
-      int i = position.x;
-      int j = position.y;
-      if (i == n - 1 && j == n - 1) return position.steps;
-
-      for (int k = 0; k < dir.length; k++) {
-        int posX = i + dir[k][0];
-        int posY = j + dir[k][1];
-
-        if (posX < 0 || posY < 0 || posX >= n || posY >= n || stringBuilder.charAt(posX * n + posY) == 'W')
-          continue;
-
-        positionQueue.offer(new Position(posX,posY,position.steps + 1));
-        stringBuilder.replace(posX * n + posY,posX * n + posY + 1,"W");
-      }
-    }
-
-    return -1;
+    initGraph(maze);
+    goTo(0, 0, 0);
+    return (graph[graph.length - 1][graph.length - 1] == INF) ? -1 : graph[graph.length - 1][graph.length - 1];
   }
 
-  static class Position{
-    int x;
-    int y;
-    int steps;
+  private static void initGraph(String maze){
+    String[] lines = maze.split("\n");
+    graph = new int[lines.length][lines.length];
+    for(int i=0; i<lines.length; i++)
+      for(int j=0; j<lines.length; j++)
+        graph[i][j] = (lines[i].charAt(j)=='W')?-1:INF;
+  }
 
-    public Position(int x, int y, int steps) {
-      this.x = x;
-      this.y = y;
-      this.steps = steps;
-    }
+  private static void goTo(int i, int j, int step){
+    if(i==-1 || i==graph.length || j==-1 || j==graph.length || graph[i][j] <= step)
+      return;
+    graph[i][j] = step;
+    goTo(i, j-1, step+1);
+    goTo(i, j+1, step+1);
+    goTo(i+1, j, step+1);
+    goTo(i-1, j, step+1);
   }
 
   public static void main(String[] args){
-      String c = "......\n"+
-      "......\n"+
-      "......\n"+
-      "......\n"+
-      "......\n"+
-      "......";
-      System.out.println(pathFinder(c));
+    String c = "......\n"+
+    "......\n"+
+    "......\n"+
+    "......\n"+
+    "......\n"+
+    "......";
+    System.out.println(pathFinder(c));
   }
 }
