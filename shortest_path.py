@@ -14,37 +14,45 @@ Path Finder Series:
 #5: there's someone here
 """
 
-
+sol = []
+maze_size = 0
 def path_finder(maze):
-	maze = [list(r) for r in maze.split('\n')]
-	maze_size = len(maze)
-	if maze[maze_size-1][maze_size-2] == 'W' and maze[maze_size-2][maze_size-1] == 'W':
-		return False
-	sol = [[ 0 for j in range(maze_size)] for i in range(maze_size)]
-	solve_maze(maze, 0, 0, sol, maze_size)
-	num_steps = sum(sum(r) for r in sol)
-	if num_steps== 0:
-		return False
-	else:
-		return num_steps - 1
+  print(maze)
+  maze = [list(r) for r in maze.split('\n')]
+  global maze_size
+  maze_size = len(maze)
+  if maze[maze_size-1][maze_size-2] == 'W' and maze[maze_size-2][maze_size-1] == 'W':
+    return False
+  global sol
+  sol = [[ 0 for c in range(maze_size)] for r in range(maze_size)]
+  solve_maze(maze, 0, 0)
+  num_steps = sum(sum(r) for r in sol)
+  if num_steps== 0:
+    return False
+  else:
+    return num_steps - 1
 
-def is_safe(maze, x, y, maze_size):
-	if x >=0 and x<maze_size and y>=0 and y<maze_size and maze[x][y]=='.':
-		return True
-	return False
+def is_safe(maze, r, c):
+  if r >=0 and r<maze_size and c>=0 and c<maze_size and maze[r][c]=='.' and sol[r][c]==0:
+    return True
+  return False
 
-def solve_maze(maze, x, y, sol, maze_size):
-	if x==maze_size-1 and y==maze_size-1 and maze[x][y]=='.':
-		sol[x][y] = 1
-		return True
-	if is_safe(maze, x, y, maze_size) == True:
-		sol[x][y] = 1
-		if solve_maze(maze, x, y+1, sol, maze_size) == True:
-			return True
-		if solve_maze(maze, x+1, y, sol, maze_size) == True:
-			return True
-		sol[x][y] = 0
-	return False
+def solve_maze(maze, r, c):
+  if r==maze_size-1 and c==maze_size-1 and maze[r][c]=='.':
+    sol[r][c] = 1
+    return True
+  if is_safe(maze, r, c) == True:
+    sol[r][c] = 1
+    if solve_maze(maze, r+1, c) == True:
+      return True
+    if solve_maze(maze, r, c+1) == True:
+      return True
+    if solve_maze(maze, r-1, c) == True:
+      return True
+    if solve_maze(maze, r, c-1) == True:
+      return True
+    sol[r][c] = 0
+    return False
 
 """
 Unit Test
